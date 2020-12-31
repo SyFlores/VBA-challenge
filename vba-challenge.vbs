@@ -30,17 +30,14 @@ Sub StockSummary()
     
     Dim i As Long
     
-    ' -------------------------------------------------
     For Each WS In Worksheets ' Open the Worksheet loop
-    ' -------------------------------------------------
     
         ' The following must be determined at the beginning of each new sheet.
         ' As such, it must take place inside the worksheet For Each loop.
         ' This must also take place outside the row For loop.
         
-        ' Set the ActiveSheet into the variable Sht
+        ' Activates the current sheet held in WS to be worked through
         WS.Activate
-        ' Set Sht = ActiveSheet
         
         ' Determine what the last row in the data set is - bottom up
         LastRow = WS.Cells(WS.Rows.Count, 1).End(xlUp).Row
@@ -79,7 +76,15 @@ Sub StockSummary()
                 Year_Start = Cells(MinDateRow, 3).Value
                 Year_End = Cells(MaxDateRow, 6).Value
                 Yearly_Change = Year_End - Year_Start
-                Yearly_Change_Percent = Yearly_Change / Year_Start ' PL-E causing error
+                ' Conditional to prevent DivBy0 Errory
+                If Year_End = 0 Then
+                
+                    Yearly_Change_Percent = -100 ' PLNT causing a DivBy0 Error
+                    Range("K" & Summary_Row).Interior.Color = RGB(200, 200, 200) ' Draw attention to these cases
+                Else
+                    Yearly_Change_Percent = Yearly_Change / Year_Start
+                
+                End If
                 
                 Ticker = Cells(i, 1).Value ' Reads in ticker value before changing
                 
@@ -88,8 +93,14 @@ Sub StockSummary()
                 Range("J" & Summary_Row).Value = Yearly_Change
                 Range("K" & Summary_Row).Value = Yearly_Change_Percent
                 Range("L" & Summary_Row).Value = Vol_Total
+                
+                If Yearly_Change > 0 Then
+                    Range("J" & Summary_Row).Interior.Color = RGB(0, 200, 0)
+                ElseIf Yearly_Change < 0 Then
+                    Range("J" & Summary_Row).Interior.Color = RGB(200, 0, 0)
+                End If
         
-                Summary_Row = Summary_Row + 1 ' Increments location for next ticker
+                Summary_Row = Summary_Row + 1 ' Increments location for next ticker in summary
                 
                 ' Reset MinDate and MaxDate - They will need to be reset in order to calc
                 ' indicate which values for the new ticket are min and max
@@ -118,9 +129,9 @@ Sub StockSummary()
             
             End If
         
-        Next i
+        Next i ' Close for loop
     
-    Next
+    Next ' Close with loop
 
 End Sub
 
@@ -164,9 +175,11 @@ End Sub
 
 Sub LoopSheets()
     
-    Dim WS As Worksheet ' Done
+    Dim WS As Worksheet
     
-    For Each WS In Worksheets ' Done
+    For Each WS In Worksheets
+    
+        WS.Activate
 ' ----------------------------------------
 ' The goods go here... Avoid declaring a variable twice
 ' Those goods will go outside of all loops
