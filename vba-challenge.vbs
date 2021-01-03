@@ -76,7 +76,7 @@ Sub StockSummary()
                 Year_End = Cells(MaxDateRow, 6).Value
                 Yearly_Change = Year_End - Year_Start
                 ' Conditional to prevent DivBy0 Errory
-                If Year_End = 0 Then
+        If Year_Start = 0 Then
                 
                     Yearly_Change_Percent = 0 ' PLNT causing a DivBy0 Error
                     Range("K" & Summary_Row).Interior.Color = RGB(200, 200, 200) ' Draw attention to these cases
